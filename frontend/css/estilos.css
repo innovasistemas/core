@@ -1,0 +1,9 @@
+.totalRegistros{
+/*    height: 64px;
+    width: 56px;*/
+    color: orange !important;
+}
+
+.ocultarElemento{
+    display: none;
+}
