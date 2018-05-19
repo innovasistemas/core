@@ -1,0 +1,689 @@
+<!-- 
+Tooltips: http://getbootstrap.com/javascript/#tooltips
+Grupos de campos: http://librosweb.es/libro/bootstrap_3/capitulo_6/grupos_de_campos_de_formulario.html
+Estados de formulario: http://librosweb.es/libro/bootstrap_3/capitulo_5/estados_de_formulario.html
+API Lugares Google: http://stackoverflow.com/questions/8282026/how-to-limit-google-autocomplete-results-to-city-and-country-only
+Ejemplos Google: https://developers.google.com/maps/documentation/javascript/examples/
+jQuery Ketchup: https://github.com/mustardamus/ketchup-plugin; http://papermashup.com/ketchup-jquery-form-validation/; https://github.com/mustardamus/ketchup-plugin/downloads
+Fórmula dígito de verificación: http://uploadgerencie.com/medios/explicacion-calculo-difiti-verificacion-jmb.pdf
+Búsqueda con Google: http://services.google.com/searchcode2.html#both
+Pestañas en Bootstrap: http://getbootstrap.com/javascript/#tabs; http://librosweb.es/libro/bootstrap_3/capitulo_6/elementos_de_navegacion.html
+Mostrar HTML con Ajax (load jQuery): http://api.jquery.com/load/
+Conversor de divisas: https://www.transfermate.com/es/conversor_de_divisas_gratuito.asp
+Tasa de cambio: http://dolar.wilkinsonpc.com.co/precio-del-dolar-valor-dolar.php
+Redondear bordes: http://lineadecodigo.com/css/redondear-bordes-con-css/
+Plantillas: http://www.designsave.net/2014/09/free-html5-css3-navigation-menus.html
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <script type="text/javascript" src="js/jquery-2.1.4.js"></script>   
+        <script type="text/javascript" src="js/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+        <script type="text/javascript" src="css/bootstrap-3.3.6/dist/js/bootstrap.js"></script>
+        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>   
+        <script type="text/javascript" src="js/jquery.ketchup.0.3.2/js/jquery.ketchup.js"></script>
+        <script type="text/javascript" src="js/jquery.ketchup.0.3.2/js/jquery.ketchup.validations.js"></script>
+
+        <script type="text/javascript" src="http://www.google.com/uds/api?file=uds.js&amp;v=0.1&amp;key=mykey"></script>
+
+        <link rel="stylesheet" type="text/css" href="http://www.google.com/uds/css/gsearch.css" />
+
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4.custom/jquery-ui.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4.custom/jquery-ui.theme.css"/>
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-3.3.6/dist/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-3.3.6/dist/css/bootstrap-theme.css" />
+        <link rel="stylesheet" type="text/css" href="js/jquery.ketchup.0.3.2/css/jquery.ketchup.css" />
+        <link rel="stylesheet" type="text/css" href="css/half-slider.css" />
+        <link rel="stylesheet" type="text/css" href="css/estilos.css" />
+
+        <style type="text/css">
+            
+            .textoIdentificacion{
+                width:75% !important;
+                float: left;
+            }
+
+            .textoDV{
+                width:20% !important;
+                float: right;
+            }
+
+            .textoFechaNacimiento{
+                /*width:90%;
+                float: left;*/
+            }
+
+            .imgCalendario{
+                width: 8%;
+                height: 8%;
+                float: right;
+            }
+
+            .tamanoImagen{
+                width: 20%; 
+                height:7%;
+            }
+
+        </style>
+
+        <style type="text/css">
+            .messages{
+                float: left;
+                font-family: sans-serif;
+                display: none;
+            }
+            .info{
+                padding: 10px;
+                border-radius: 10px;
+                background: orange;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+            .before{
+                padding: 10px;
+                border-radius: 10px;
+                background: blue;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+            .success{
+                padding: 10px;
+                border-radius: 10px;
+                background: green;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+            .error{
+                padding: 10px;
+                border-radius: 10px;
+                background: red;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+        </style>
+
+        <title>PHPWorkshop</title>
+        
+    </head>
+    
+    <body>                
+        <!--Inicio barra de navegación-->
+        <!--<nav class="navbar navbar-default navbar-fixed-top " role="navigation">-->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- El logotipo y el icono que despliega el menú se agrupan
+             para mostrarlos mejor en los dispositivos móviles -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse"
+                        data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Desplegar navegación</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="articles.html">
+                    PHPWorkshop
+                </a>
+            </div>
+
+            <!-- Agrupar los enlaces de navegación, los formularios y cualquier
+                 otro elemento que se pueda ocultar al minimizar la barra -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="navbar"><a href="articles.html">All articles</a></li>
+                    <li class="active"><a href="#" class="articles-new">New article</a></li>
+                    <li class="dropdown">
+                        <ul class="dropdown-menu">
+                        </ul>
+                    </li>
+                </ul>
+                
+                <ul class="nav navbar-nav navbar-right">
+                    <!--<li><a href="#">Ajustes</a></li>-->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                          System <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" class="acercade">About</a></li>
+                        </ul>
+                      </li>
+                </ul>
+                <p class="navbar-text navbar-right">User: <a href="#" class="navbar-link">Invited</a></p>
+            </div>       
+        </nav>
+        
+       
+        <!-- Fin barra de navegación-->
+        
+        
+        <!-- Inicio header (cabecera)-->
+        <!-- Half Page Image Background Carousel Header -->
+        <header id="myCarousel" class="carousel slide">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+
+            <!-- Wrapper for Slides -->
+            <div class="carousel-inner">
+                <div class="item active">
+                    <!-- Set the first background image using inline CSS below. -->
+<!--                    <div class="fill" style="background-image:url('http://placehold.it/1900x1080&text=Slide One');"></div>-->
+                    <div class="fill" style="background-image:url('images/1.jpg');"></div>
+                    <div class="carousel-caption">
+                        <h2>Innovation</h2>
+                    </div>
+                </div>
+                <div class="item">
+                    <!-- Set the second background image using inline CSS below. -->
+<!--                    <div class="fill" style="background-image:url('http://placehold.it/1900x1080&text=Slide Two');"></div>-->
+                    <div class="fill" style="background-image:url('images/2.jpg');"></div>
+                    <div class="carousel-caption">
+                        <h2>Trends</h2>
+                    </div>
+                </div>
+                <div class="item">
+                    <!-- Set the third background image using inline CSS below. -->
+<!--                    <div class="fill" style="background-image:url('http://placehold.it/1900x1080&text=Slide Three');"></div>-->
+                    <div class="fill" style="background-image:url('images/3.jpg');"></div>
+                    <div class="carousel-caption">
+                        <h2>Smart ideas</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                <span class="icon-prev"></span>
+            </a>
+            <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                <span class="icon-next"></span>
+            </a>
+
+        </header>
+        
+        <!-- Fin header (cabecera)-->
+                    
+        <!-- Inicio contenido - (formulario principal) -->
+        <div id="contenedor" class="modal-dialog">
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="javascript:window.history.back();">Go back</a>
+                </div>
+                <div class="col-md-6">
+                    <a href="#" class="guardar-registro">Save/Update</a>
+                </div>
+            </div>
+            
+            <div class="row">
+                <hr/>
+            </div>
+            
+            <div class="row">
+                <form role="form" name="frmRegistro" id="frmRegistro" enctype="multipart/form-data">
+                    
+                    <div class="form-group">
+                        <img src="images/sin_foto.jpg" class="img-responsive" id="imagen-articulo"/>
+                    </div>
+                    
+                    <div class="form-group" id="divArchivo">
+                        <label for="fleArchivo" class="control-label">Attach image</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <img src="css/glyphicons_free/glyphicons_free/glyphicons/png/glyphicons-139-picture.png" id="imgImagen"/>
+                            </span>
+                            <input type="file" name="fleArchivo" id="fleArchivo" class="btn btn-success" data-toggle="tooltip" data-placement="top" title="Seleccionar un archivo"/>
+                        </div>
+                        <p class="help-block">Upload your photo from here</p>
+
+                        <div class="messages"></div><br /><br />
+                        <!--div para visualizar en el caso de imagen-->
+                        <div class="showImage"></div>
+
+                    </div>
+                      
+                    <input type="text" name="txtId" id="txtId" class="ocultarElemento" value=""/>
+                    <div class="form-group" id="divTitulo">
+                        <label for="txtTitulo" class="control-label">Title</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <img src="css/glyphicons_free/glyphicons_free/glyphicons/png/glyphicons-750-hash.png"/>
+                            </span>
+                            <input type="text" name="txtTitulo" id="txtTitulo" class="form-control input-lg" placeholder="Article title" maxlength="50" data-toggle="tooltip" data-placement="bottom" data-validate="validate(required, minlength(3))" title="Enter a title (must be unique)" />                        
+                        </div>                    
+                    </div>
+
+                    <div class="form-group" id="divDescripcion">
+                        <label for="txtDescripcion" class="control-label">Description</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <img src="css/glyphicons_free/glyphicons_free/glyphicons/png/glyphicons-269-keyboard-wireless.png"/>
+                            </span>
+                            <textarea name="txtDescripcion" id="txtDescripcion" class="form-control input-lg" placeholder="Description" maxlength="1000" data-toggle="tooltip" data-placement="bottom" data-validate="validate(required, minlength(3))" title="Enter a description"></textarea>
+                        </div>
+                    </div>
+
+                     
+
+                    <div class="form-group">
+<!--                        <input type="submit" value="Enviar" class="btn btn-info" id="btnEnviar0" data-toggle="tooltip" data-placement="top" title="Enviar"/>
+                        <input type="button" value="Enviar datos" class="btn btn-primary" id="btnEnviar" data-toggle="tooltip" data-placement="top" title="Enviar datos"/>-->
+                        <input type="reset" value="Reset" class="btn btn-info" id="btnRestablecer" data-toggle="tooltip" data-placement="top" title="Reset"/>
+                    </div>
+
+                </form>
+            </div> 
+            
+            <div id="resultado"></div>
+            <div id="map"></div>
+            <div id="dialog" title="System message"></div>
+            
+            <!--
+            <div class="page-header">
+                <h2>Sticky footer</h2>
+            </div>
+            <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS.</p>
+            -->
+            
+        </div>
+        
+        <!-- Fin contenido -->
+        
+        <!-- Inicio pie de página -->
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted credit">Thanks for visiting <a href="#">PHPWorkshop</a>. Author <a href="#">Jaime Montoya</a></p>
+            </div>
+        </div>
+        
+        <!-- Fin pie de página -->
+
+                
+        <!-- Fin contenido-->              
+               
+        <!--Javascript de la página-->
+        <script>
+            
+            $(function() { 
+
+                //Llenar formulario 
+                verificarDatos();
+
+
+                //$(".messages").hide();
+                
+                //Variable global
+                var fileExtension = "";
+                
+                //Función que observa los cambios del campo file y obtiene información
+                $(':file').change(function(){
+                    //Usamos el array con los datos del archivo
+                    var file = $("#fleArchivo")[0].files[0];
+                    //Obtenemos el nombre del archivo
+                    var fileName = file.name;
+                    //Obtenemos la extensión del archivo
+                    fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1); 
+                    //Obtenemos el tamaño del archivo
+                    var fileSize = file.size;
+                    //Obtenemos el tipo de archivo (image/png) ejemplo
+                    var fileType = file.type;
+                    //mensaje con la información del archivo
+                    //showMessage("<span class='info'>Archivo para subir: "+fileName+", peso total: "+fileSize+" bytes.</span>");
+                });
+                                
+                $("#btnEnviar").click(function(){
+                    $( "#dialog" ).html("<p>¿Está seguro?</p>");
+                    $( "#dialog" ).dialog({
+                        autoOpen: true,
+                        modal: true,
+                        buttons: {
+                            "Aceptar": function () {
+                                $(this).dialog("close");
+                                //if(validarDatos())
+                                //{
+                                    
+                                    var formData = new FormData($("#frmRegistro"));
+                                    
+                                    //formData.append("clave", "valor");
+                                    formData.append("txtTitulo", $("#txtTitulo").val());
+                                    if($("#chkEstudia").is(':checked'))
+                                        formData.append("chkOcupacion[]", $("#chkEstudia").val());
+                                    if($("#chkTrabaja").is(':checked'))
+                                        formData.append("chkOcupacion[]", $("#chkTrabaja").val());
+                                    
+                                    formData.append("fleArchivo", $("#fleArchivo")[0].files[0]);
+                                     
+                                    var url = "proceso.php";
+                                    
+                                    $.ajax({
+                                        type: "POST",
+                                        url: url,
+                                        dataType: 'json',
+                                        //data: $("#frmRegistro").serialize(), // Adjuntar los campos del formulario enviado.
+                                        //data: formData,
+                                        data: {'archivo':$("#fleArchivo")[0].files[0]},
+                                        //Necesario para subir archivos vía Ajax
+                                        cache: false,
+                                        contentType: false,
+                                        processData: false,
+                                        
+                                        //Mientras enviamos el archivo
+                                        beforeSend: function()
+                                        {
+                                            if(isImage(fileExtension) && $("#fleArchivo")[0].files[0])
+                                            {
+                                                message = $("<span class='before'>Subiendo la imagen, por favor espere...</span>");
+                                            }
+                                            else
+                                            {
+                                                message = $("");
+                                            }
+                                            showMessage(message);
+                                        },
+            
+                                        success: function(data)
+                                        {
+                                           if(isImage(fileExtension) && data.imagen)
+                                            {
+                                                message = $("<span class='success'>La imagen ha subido correctamente.</span>");
+                                                showMessage(message);
+                                                $(".showImage").html("<img height='100' width='100' src='files/"+data.imagen+"' />");
+                                            }
+                                            $("#resultado").html(data.mensaje + "<br>" + data.error + "<br>" + data.siz+ "<br>" + data.ext); // Mostrar la respuestas del script PHP.
+                                            $("#txtDV").val(data.dv);
+                                        },
+                                            
+                                        //si ha ocurrido un error
+                                        error: function()
+                                        {
+                                            message = $("<span class='error'>Ha ocurrido un error.</span>");
+                                            showMessage(message);
+                                        }
+
+                                    });
+                                //}
+
+                                return false; // Evitar ejecutar el submit del formulario.
+                            },
+                            "Cancelar": function () {
+                                $(this).dialog("close");
+                            }
+                        } 
+                    });
+ 
+                });
+                               
+                $(".guardar-registro").click(function(){
+                    $("#divTitulo").val($("#divTitulo").val().trim());
+                    $("#txtDescripcion").val($("#txtDescripcion").val().trim());
+                    if(validarLongitud($("#divTitulo"), $("#txtTitulo"), 3) && validarLongitud($("#divDescripcion"), $("#txtDescripcion"), 3))
+                    {
+                        var formData = new FormData($("#frmRegistro"));
+
+                        formData.append("title", $("#txtTitulo").val());
+                        formData.append("description", $("#txtDescripcion").val());
+                        formData.append("fleArchivo", $("#fleArchivo")[0].files[0]);
+
+                        var url = "http://localhost/PHPWorkshopJaimeMontoya/backend/index.php/MaestrasGestion/guardarRegistro";
+
+                        $.ajax({
+                            type: "POST",
+                            url: url,
+                            dataType: 'json',
+                            data: formData,
+                            //Necesario para subir archivos vía Ajax
+                            cache: false,
+                            contentType: false,
+                            processData: false,
+
+                            //Mientras enviamos el archivo
+                            /*beforeSend: function()
+                            {
+                                if(isImage(fileExtension) && $("#fleArchivo")[0].files[0])
+                                {
+                                    message = $("<span class='before'>Subiendo la imagen, por favor espere...</span>");
+                                }
+                                else
+                                {
+                                    message = $("");
+                                }
+                                showMessage(message);
+                            },*/
+
+                            success: function(datos)
+                            {
+                                $( "#dialog" ).html(datos.contenido);
+                                $( "#dialog" ).dialog({
+                                    autoOpen: true,
+                                    modal: true,
+                                    buttons: {
+                                        "Ok": function () {
+                                            $(this).dialog("close");                                            
+                                        }
+                                    } 
+                                });
+                                
+//                                if(isImage(fileExtension) && contenido.imagen)
+//                                {
+                                    message = $("<span class='success'>La imagen ha subido correctamente.</span>");
+                                    showMessage(message);
+//                                    $(".showImage").html("<img height='100' width='100' src='files/"+data.imagen+"' />");
+//                                
+//                                }
+                                //$("#resultado").html(data.mensaje + "<br>" + data.error + "<br>" + data.siz+ "<br>" + data.ext); // Mostrar la respuestas del script PHP.
+                                //$("#resultado").html(data.mensaje + "<br>" + data.error); // Mostrar la respuestas del script PHP.
+
+                            },
+
+                            //si ha ocurrido un error
+                            error: function()
+                            {
+                                message = $("<span class='error'>Ha ocurrido un error.</span>");
+                                showMessage(message);
+                            }
+
+                        });
+                    }
+                    else
+                    {
+                        $( "#dialog" ).html("Verify the entered information");
+                        $( "#dialog" ).dialog({
+                            autoOpen: true,
+                            modal: true,
+                            buttons: {
+                                "Ok": function () {
+                                    $(this).dialog("close");                                            
+                                }
+                            } 
+                        });
+                    }
+                });
+                
+                /*
+                $(".guardar-registro").click(function(){
+                    var id = $("#txtId").val();
+                    var titulo = $("#txtTitulo").val();
+                    var descripcion = $("#txtDescripcion").val();
+                    //var imagen = $("#fleArchivo").val();
+                    var imagen = "redessociales.png";
+                    
+                    $("#divTitulo").val($("#divTitulo").val().trim());
+                    $("#txtDescripcion").val($("#txtDescripcion").val().trim());
+                    if(validarLongitud($("#divTitulo"), $("#txtTitulo"), 3) && validarLongitud($("#divDescripcion"), $("#txtDescripcion"), 3))
+                    {
+//                        if(id.length == 0)
+//                        {
+                            $.ajax({
+                                url: 'http://localhost:8080/PHPWorkshopJaimeMontoya/backend/index.php/MaestrasGestion/guardarRegistro',
+                                data: {"id":id, "title":titulo, "description":descripcion, "image":imagen},
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function(datos) {
+                                    $( "#dialog" ).html(datos.contenido);
+                                    $( "#dialog" ).dialog({
+                                        autoOpen: true,
+                                        modal: true,
+                                        buttons: {
+                                            "Ok": function () {
+                                                $(this).dialog("close");                                            
+                                            }
+                                        } 
+                                    });
+                                }
+                            });
+                        /*}
+                        else
+                        {
+                            $.ajax({
+                                url: 'http://localhost:8080/PHPWorkshopJaimeMontoya/backend/index.php/MaestrasGestion/agregarRegistro',
+                                data: {"id":id, "title":titulo, "description":descripcion},
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function(datos) {
+                                    $('#result').html(datos.contenido);
+                                }
+                            });
+                        }*/
+ /*                   }
+                    else
+                    {
+                        $( "#dialog" ).html("Verify the entered information");
+                        $( "#dialog" ).dialog({
+                            autoOpen: true,
+                            modal: true,
+                            buttons: {
+                                "Ok": function () {
+                                    $(this).dialog("close");                                            
+                                }
+                            } 
+                        });
+                    }
+                   
+                });*/
+                
+                $("#btnRestablecer").click(function(){
+                    $("#divTitulo").removeClass("has-error has-success"); 
+                    $("#divDescripcion").removeClass("has-error has-success"); 
+                    $(".ketchup-error").css("display", "none"); 
+                    $("#resultado").html(''); 
+                    $(".messages").html(''); 
+                    $(".showImage").html(''); 
+                });
+                               
+                $('[data-toggle="tooltip"]').tooltip();
+                
+                $('#frmRegistro').ketchup();
+                                                       
+                //Validaciones focosout: longitud y otros       
+                $("#txtTitulo").focusout(function(){
+                    $("#txtTitulo").val($("#txtTitulo").val().trim());
+                    validarLongitud($("#divTitulo"), $("#txtTitulo"), 3);
+                });
+                
+                $("#txtDescripcion").focusout(function(){
+                    $("#txtDescripcion").val($("#txtDescripcion").val().trim());
+                    validarLongitud($("#divDescripcion"), $("#txtDescripcion"), 3);
+                });
+                
+                $(".acercade").click(function(){
+                    $( "#dialog" ).html("PHP Workshop<br>Developed by: <strong>Jaime Montoya</strong>");
+                    $( "#dialog" ).dialog({
+                        autoOpen: true,
+                        modal: true,
+                        buttons: {
+                            "Ok": function () {
+                                $(this).dialog("close");
+                                return false; // Evitar ejecutar el submit del formulario.
+                            }
+                        } 
+                    });
+                    
+                });
+
+                $(".articles-new").click(function(){
+                    agregarRegistro();
+                })
+                
+                
+            });
+            
+            //****************************
+            //Funciones Javascript
+            //****************************
+            
+            function verificarDatos()
+            {
+                if(localStorage.getItem('id') != null)
+                {
+                   $("#txtId").val(localStorage.getItem('id'));
+                   $("#txtTitulo").val(localStorage.getItem('title'));
+                   $("#txtDescripcion").val(localStorage.getItem('description'))
+                   $("#imgImagen").attr("src", "http://localhost/PHPWorkshopJaimeMontoya/assets/images-article/backend/" + localStorage.getItem('image'))
+                   console.log($("#imgImagen"), $("#imgImagen").attr("src"))
+                }
+            }
+
+            function agregarRegistro()
+            {
+                localStorage.setItem("id", "");
+                localStorage.setItem("title", "");
+                localStorage.setItem("description", "");
+                localStorage.setItem("image", "");
+                window.location = "articles-new.html";
+            }
+            
+            function validarLongitud(division, control, longitud)
+            {
+                var sw = false
+                if(control.val().length >= longitud)
+                {
+                    division.removeClass("has-error"); 
+                    division.addClass("has-success");
+                    sw = true;
+                }
+                else
+                {
+                    division.removeClass("has-success");
+                    division.addClass("has-error");
+                }
+                return sw;
+            }
+            
+            //Funciones para la carga de la imagen
+            function showMessage(message)
+            {
+                $(".messages").html("").show();
+                $(".messages").html(message);
+            }
+
+            //Comprobamos si el archivo a subir es una imagen para visualizarla una vez haya subido
+            function isImage(extension)
+            {
+                switch(extension.toLowerCase()) 
+                {
+                    case 'jpg': case 'gif': case 'png': case 'jpeg':
+                        return true;
+                        //break;
+                    default:
+                        return false;
+                        //break;
+                }
+            }
+                     
+            
+                       
+        </script>
+        
+    </body>
+</html>

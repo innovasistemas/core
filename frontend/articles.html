@@ -1,0 +1,330 @@
+<!-- 
+Tooltips: http://getbootstrap.com/javascript/#tooltips
+Grupos de campos: http://librosweb.es/libro/bootstrap_3/capitulo_6/grupos_de_campos_de_formulario.html
+Estados de formulario: http://librosweb.es/libro/bootstrap_3/capitulo_5/estados_de_formulario.html
+API Lugares Google: http://stackoverflow.com/questions/8282026/how-to-limit-google-autocomplete-results-to-city-and-country-only
+Ejemplos Google: https://developers.google.com/maps/documentation/javascript/examples/
+jQuery Ketchup: https://github.com/mustardamus/ketchup-plugin; http://papermashup.com/ketchup-jquery-form-validation/; https://github.com/mustardamus/ketchup-plugin/downloads
+Fórmula dígito de verificación: http://uploadgerencie.com/medios/explicacion-calculo-difiti-verificacion-jmb.pdf
+Búsqueda con Google: http://services.google.com/searchcode2.html#both
+Pestañas en Bootstrap: http://getbootstrap.com/javascript/#tabs; http://librosweb.es/libro/bootstrap_3/capitulo_6/elementos_de_navegacion.html
+Mostrar HTML con Ajax (load jQuery): http://api.jquery.com/load/
+Conversor de divisas: https://www.transfermate.com/es/conversor_de_divisas_gratuito.asp
+Tasa de cambio: http://dolar.wilkinsonpc.com.co/precio-del-dolar-valor-dolar.php
+Redondear bordes: http://lineadecodigo.com/css/redondear-bordes-con-css/
+Plantillas: http://www.designsave.net/2014/09/free-html5-css3-navigation-menus.html
+-->
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <script type="text/javascript" src="js/jquery-2.1.4.js"></script>   
+        <script type="text/javascript" src="js/jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+        <script type="text/javascript" src="css/bootstrap-3.3.6/dist/js/bootstrap.js"></script>
+        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&amp;libraries=places"></script>   
+        <script type="text/javascript" src="js/jquery.ketchup.0.3.2/js/jquery.ketchup.js"></script>
+        <script type="text/javascript" src="js/jquery.ketchup.0.3.2/js/jquery.ketchup.validations.js"></script>
+
+        <script type="text/javascript" src="http://www.google.com/uds/api?file=uds.js&amp;v=0.1&amp;key=mykey"></script>
+
+        <link rel="stylesheet" type="text/css" href="http://www.google.com/uds/css/gsearch.css" />
+
+        <link rel="stylesheet" type="text/css" href="css/estilos.css" />
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4.custom/jquery-ui.css"/>
+        <link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4.custom/jquery-ui.theme.css"/>
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-3.3.6/dist/css/bootstrap.css" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap-3.3.6/dist/css/bootstrap-theme.css" />
+        <link rel="stylesheet" type="text/css" href="js/jquery.ketchup.0.3.2/css/jquery.ketchup.css" />
+        <link rel="stylesheet" type="text/css" href="css/half-slider.css" />
+        
+
+        <style type="text/css">
+            .messages{
+                float: left;
+                font-family: sans-serif;
+                display: none;
+            }
+            .info{
+                padding: 10px;
+                border-radius: 10px;
+                background: orange;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+            .before{
+                padding: 10px;
+                border-radius: 10px;
+                background: blue;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+            .success{
+                padding: 10px;
+                border-radius: 10px;
+                background: green;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+            .error{
+                padding: 10px;
+                border-radius: 10px;
+                background: red;
+                color: #fff;
+                font-size: 1em;
+                text-align: center;
+            }
+        </style>
+
+        <title>PHPWorkshop</title>
+        
+    </head>
+    
+    <body>                
+        <!--Inicio barra de navegación-->
+        <!--<nav class="navbar navbar-default navbar-fixed-top " role="navigation">-->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- El logotipo y el icono que despliega el menú se agrupan
+             para mostrarlos mejor en los dispositivos móviles -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse"
+                        data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Desplegar navegación</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="articles.html">
+                    PHPWorkshop
+                    <!--<img src="images/calendar.jpg" border="0" title="Google" width="75" height="35">-->
+                </a>
+            </div>
+
+            <!-- Agrupar los enlaces de navegación, los formularios y cualquier
+                 otro elemento que se pueda ocultar al minimizar la barra -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="articles.html">All articles</a></li>
+                    <li class="navbar"><a href="#" class="articles-new">New article</a></li>
+                    <li class="dropdown">
+
+                        <ul class="dropdown-menu">
+
+                        </ul>
+                    </li>
+
+                </ul>
+               
+                <!--SiteSearch Google -->           
+                
+                <ul class="nav navbar-nav navbar-right">
+                    <!--<li><a href="#">Ajustes</a></li>-->
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                          System <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" class="acercade">About</a></li>
+                        </ul>
+                      </li>
+                </ul>
+                <p class="navbar-text navbar-right">User: <a href="#" class="navbar-link">Invited</a></p>
+            </div>       
+        </nav>
+        
+       
+        <!-- Fin barra de navegación-->
+        
+        
+        <!-- Inicio header (cabecera)-->
+        <!-- Half Page Image Background Carousel Header -->
+        <header id="myCarousel" class="carousel slide">
+            <!-- Indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+
+            <!-- Wrapper for Slides -->
+            <div class="carousel-inner">
+                <div class="item active">
+                    <!-- Set the first background image using inline CSS below. -->
+<!--                    <div class="fill" style="background-image:url('http://placehold.it/1900x1080&text=Slide One');"></div>-->
+                    <div class="fill" style="background-image:url('images/1.jpg');"></div>
+                    <div class="carousel-caption">
+                        <h2>Innovation</h2>
+                    </div>
+                </div>
+                <div class="item">
+                    <!-- Set the second background image using inline CSS below. -->
+<!--                    <div class="fill" style="background-image:url('http://placehold.it/1900x1080&text=Slide Two');"></div>-->
+                    <div class="fill" style="background-image:url('images/2.jpg');"></div>
+                    <div class="carousel-caption">
+                        <h2>Trends</h2>
+                    </div>
+                </div>
+                <div class="item">
+                    <!-- Set the third background image using inline CSS below. -->
+<!--                    <div class="fill" style="background-image:url('http://placehold.it/1900x1080&text=Slide Three');"></div>-->
+                    <div class="fill" style="background-image:url('images/3.jpg');"></div>
+                    <div class="carousel-caption">
+                        <h2>Smart ideas</h2>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
+                <span class="icon-prev"></span>
+            </a>
+            <a class="right carousel-control" href="#myCarousel" data-slide="next">
+                <span class="icon-next"></span>
+            </a>
+
+        </header>
+        
+        <!-- Fin header (cabecera)-->
+                    
+        <!-- Inicio contenido - (formulario principal) -->
+        <div id="contenedor" class="modal-dialog">
+            <h1 class="h1">All articles</h1>
+            
+                    
+            <div id="result"></div>
+            <div id="map"></div>
+            <div id="dialog" title="System message"></div>
+            
+            <!--
+            <div class="page-header">
+                <h2>Sticky footer</h2>
+            </div>
+            <p class="lead">Pin a fixed-height footer to the bottom of the viewport in desktop browsers with this custom HTML and CSS.</p>
+            -->
+            
+        </div>
+        
+        <!-- Fin contenido -->
+        
+        <!-- Inicio pie de página -->
+        <div id="footer">
+            <div class="container">
+                <p class="text-muted credit">Thanks for visiting <a href="#">PHPWorkshop</a>. Author <a href="#">Jaime Montoya</a></p>
+            </div>
+        </div>
+        
+        <!-- Fin pie de página -->
+
+                
+        <!-- Fin contenido-->              
+               
+        <!--Javascript de la página-->
+        <script>
+            $(function() { 
+                
+                cargarRegistros();
+                               
+                $(".acercade").click(function(){
+                    $( "#dialog" ).html("PHP Workshop<br>Developed by: <strong>Jaime Montoya</strong>");
+                    $( "#dialog" ).dialog({
+                        autoOpen: true,
+                        modal: true,
+                        buttons: {
+                            "Ok": function () {
+                                $(this).dialog("close");
+                                return false; // Evitar ejecutar el submit del formulario.
+                            }
+                        } 
+                    });
+                });
+
+                $(".articles-new").click(function(){
+                    agregarRegistro();
+                })
+                
+            });
+            
+            //****************************
+            //Funciones Javascript
+            //****************************
+            
+            function cargarRegistros()
+            {
+                $.ajax({
+                    url: 'http://localhost/PHPWorkshopJaimeMontoya/backend/index.php/MaestrasGestion/articulos',
+                    //data: datos_formulario,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(datos) {
+                        $('#result').html(datos.contenido);
+                    }
+                });
+            }
+
+            function agregarRegistro()
+            {
+                localStorage.setItem("id", "");
+                localStorage.setItem("title", "");
+                localStorage.setItem("description", "");
+                localStorage.setItem("image", "");
+                window.location = "articles-new.html";
+            }
+
+            function actualizarRegistro(id, title, description, image)
+            {
+                // Store
+                localStorage.setItem("id", id);
+                localStorage.setItem("title", title);
+                localStorage.setItem("description", description);
+                localStorage.setItem("image", image);
+                window.location = "articles-new.html";
+            }
+            
+            function eliminarRegistro(id)
+            {
+                $( "#dialog" ).html("¿Are you sure?");
+                $( "#dialog" ).dialog({
+                    autoOpen: true,
+                    modal: true,
+                    buttons: {
+                        "Ok": function () {
+                            $(this).dialog("close"); 
+                            $.ajax({
+                                url: 'http://localhost/PHPWorkshopJaimeMontoya/backend/index.php/MaestrasGestion/eliminarRegistro/' + id,
+                                //data: datos_formulario,
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function(datos) {
+                                    $( "#dialog" ).html(datos.contenido);
+                                    $( "#dialog" ).dialog({
+                                        autoOpen: true,
+                                        modal: true,
+                                        buttons: {
+                                            "Ok": function () {
+                                                $(this).dialog("close");
+                                                cargarRegistros();
+                                            }
+                                        } 
+                                    });
+                                }
+
+                            });
+                        },
+                        "Cancel": function(){
+                           $(this).dialog("close"); 
+                        }
+                    } 
+
+                }); 
+            }
+                  
+                    
+        </script>
+        
+    </body>
+</html>
